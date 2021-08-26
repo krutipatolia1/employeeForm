@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -12,24 +12,20 @@ import ProfessionalDetailComponent from '../Component/professionalDetails';
 import CurrentStatusComponent from '../Component/currentStatus';
 import ExperienceDetailComponent from '../Component/experienceDetails';
 import EducationalDetailComponent from '../Component/educationalDetails';
-import { shallowEqual, useDispatch, useSelector  } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { bankDetailsSuccess, currentStatusSuccess, educationDetailsSuccess, employeeFormSuccess, experienceDetailsSuccess, personalDetailsSuccess, professionalDetailsSuccess } from '../Store/personalDetails/action';
 
 function getSteps() {
   return ['Personal Details', 'Bank Details', 'Professional Details', 'Current Status', 'Experience Details', 'Educational Details'];
 }
 
-
-
-
-
 const UserDetail = () => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [completed, setCompleted] = React.useState(new Set());
-  const [skipped, setSkipped] = React.useState(new Set());
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState(new Set());
+  const [skipped, setSkipped] = useState(new Set());
   const steps = getSteps();
   const [personalDetailValue, setPersonalDetailValue] = useState([]);
   const [bankDetailValue, setBankDetailValue] = useState([]);
@@ -43,22 +39,21 @@ const UserDetail = () => {
   const [isRemoveuCrrentStatus, setIsRemoveCurrentStatus] = useState(false);
   const [isRemoveExperience, setIsRemoveExperience] = useState(false);
   const [isRemoveEducation, setIsRemoveEducation] = useState(false);
-  
 
   function getStepContent(step) {
     switch (step) {
       case 0:
         return <PersonalDetailComponent value={personalDetailValue} setValue={setPersonalDetailValue} isRemove={isRemovePersonal} />;
       case 1:
-        return <BankDetailComponent value={bankDetailValue} setValue={setBankDetailValue} isRemove={isRemoveBank}/>;
+        return <BankDetailComponent value={bankDetailValue} setValue={setBankDetailValue} isRemove={isRemoveBank} />;
       case 2:
-        return <ProfessionalDetailComponent value={professionalDetailValue} setValue={setProfessionalDetailValue} isRemove={isRemoveProfessional}/>;
+        return <ProfessionalDetailComponent value={professionalDetailValue} setValue={setProfessionalDetailValue} isRemove={isRemoveProfessional} />;
       case 3:
-        return <CurrentStatusComponent value={currentStatusValue} setValue={setCurrentStatusValue} isRemove={isRemoveuCrrentStatus}/>;
+        return <CurrentStatusComponent value={currentStatusValue} setValue={setCurrentStatusValue} isRemove={isRemoveuCrrentStatus} />;
       case 4:
-        return <ExperienceDetailComponent value={experienceDetailsValue} setValue={setExperienceDetailsValue} isRemove={isRemoveExperience}/>;
+        return <ExperienceDetailComponent value={experienceDetailsValue} setValue={setExperienceDetailsValue} isRemove={isRemoveExperience} />;
       case 5:
-        return <EducationalDetailComponent value={educationDetailsValue} setValue={setEducationDetailsValue} isRemove={isRemoveEducation}/>;
+        return <EducationalDetailComponent value={educationDetailsValue} setValue={setEducationDetailsValue} isRemove={isRemoveEducation} />;
       default:
         return 'Unknown step';
     }
@@ -123,51 +118,56 @@ const UserDetail = () => {
 
   const nextClick = (activeStep) => {
     if (activeStep === 0) {
-     return personalDetailValue[0] !== undefined && personalDetailValue[0]?.firstName !== '' && personalDetailValue[0]?.lastName !== '' && personalDetailValue[0]?.dob !== ''
-     && personalDetailValue[0]?.phone !== '' && personalDetailValue[0]?.email !== ''  ? false : true
-    } else if(activeStep === 1){
+      return personalDetailValue[0] !== undefined && personalDetailValue[0]?.firstName !== '' && personalDetailValue[0]?.lastName !== '' && personalDetailValue[0]?.dob !== ''
+        && personalDetailValue[0]?.phone !== '' && personalDetailValue[0]?.email !== '' ? false : true &&
+      dispatch(personalDetailsSuccess(personalDetailValue))
+    } else if (activeStep === 1) {
       return bankDetailValue[0] !== undefined && bankDetailValue[0]?.acNumber !== '' && bankDetailValue[0]?.ifsc !== '' && bankDetailValue[0]?.pan !== ''
-      && bankDetailValue[0]?.adhar !== '' ? false : true
-    } else if(activeStep === 2){
-      return professionalDetailValue[0] !== undefined  && professionalDetailValue[0]?.years !== '' && bankDetailValue[0]?.months !== ''
-      ? false : true
-    } else if(activeStep === 3){
+        && bankDetailValue[0]?.adhar !== '' ? false : true
+    } else if (activeStep === 2) {
+      return professionalDetailValue[0] !== undefined && professionalDetailValue[0]?.years !== '' && bankDetailValue[0]?.months !== ''
+        ? false : true
+    } else if (activeStep === 3) {
       return currentStatusValue[0] !== undefined && currentStatusValue[0]?.compnay !== '' && currentStatusValue[0]?.designation !== '' && currentStatusValue[0]?.department !== ''
-      && currentStatusValue[0]?.ctc !== '' && currentStatusValue[0]?.workingDate !== ''? false : true
-    } else if(activeStep === 4){
+        && currentStatusValue[0]?.ctc !== '' && currentStatusValue[0]?.workingDate !== '' ? false : true
+    } else if (activeStep === 4) {
       return experienceDetailsValue[0] !== undefined && experienceDetailsValue[0]?.compnay !== '' && experienceDetailsValue[0]?.designation !== '' && experienceDetailsValue[0]?.department !== ''
-      && experienceDetailsValue[0]?.ctc !== '' && experienceDetailsValue[0]?.workingDate !== '' && experienceDetailsValue[0]?.workingTo !== ''? false : true
-    } else if(activeStep === 5){
+        && experienceDetailsValue[0]?.ctc !== '' && experienceDetailsValue[0]?.workingDate !== '' && experienceDetailsValue[0]?.workingTo !== '' ? false : true
+    } else if (activeStep === 5) {
       return true
-    } 
+    }
   }
 
-  const handleRemove = (activeStep) =>{
-    if (activeStep === 0 && personalDetailValue && personalDetailValue[0] ) {
-       setPersonalDetailValue({dob: "",email: "",firstName: "",lastName: "",phone: ""})  
-       dispatch(personalDetailsSuccess({dob: "",email: "",firstName: "",lastName: "",phone: ""}))
-     } else if(activeStep === 1 && bankDetailValue && bankDetailValue[0]){
-      setBankDetailValue({acNumber: "",ifsc: "",pan: "",adhar: ""})  
-      dispatch(bankDetailsSuccess({acNumber: "",ifsc: "",pan: "",adhar: ""}))
-     } else if(activeStep === 2 && professionalDetailValue && professionalDetailValue[0]){
-      setProfessionalDetailValue({resume: "",years: "",months: ""})  
-      dispatch(professionalDetailsSuccess({resume: "",years: "",months: ""}))
-     }else if(activeStep === 3 && currentStatusValue && currentStatusValue[0]){
-      setCurrentStatusValue({compnay: "",designation: "",department: "",ctc: "",workingDate:""})  
-      dispatch(currentStatusSuccess({compnay: "",designation: "",department: "",ctc: "",workingDate:""}))
-     }else if(activeStep === 4 && experienceDetailsValue && experienceDetailsValue[0]){
-      setExperienceDetailsValue({compnay: "",designation: "",department: "",ctc: "",workingDate:"",workingTo: ""})  
-      dispatch(experienceDetailsSuccess({compnay: "",designation: "",department: "",ctc: "",workingDate:"",workingTo: ""}))
-     }else if(activeStep === 5 && educationDetailsValue && educationDetailsValue[0]){
-      setEducationDetailsValue({course: "",university: "",passedOn: "",grade: ""})  
-      dispatch(educationDetailsSuccess({course: "",university: "",passedOn: "",grade: ""}))
-     }
+  const handleRemove = (activeStep) => {
+    if (activeStep === 0 && personalDetailValue) {
+      setPersonalDetailValue({ dob: "", email: "", firstName: "", lastName: "", phone: "", profilePicture: null })
+      dispatch(personalDetailsSuccess({ dob: "", email: "", firstName: "", lastName: "", phone: "", profilePicture: null }))
+    } else if (activeStep === 1 && bankDetailValue && bankDetailValue[0]) {
+      setBankDetailValue({ acNumber: "", ifsc: "", pan: "", adhar: "" })
+      dispatch(bankDetailsSuccess({ acNumber: "", ifsc: "", pan: "", adhar: "" }))
+    } else if (activeStep === 2 && professionalDetailValue && professionalDetailValue[0]) {
+      setProfessionalDetailValue({ years: "", months: "" })
+      dispatch(professionalDetailsSuccess({ years: "", months: "" }))
+    } else if (activeStep === 3 && currentStatusValue && currentStatusValue[0]) {
+      setCurrentStatusValue({ compnay: "", designation: "", department: "", ctc: "", workingDate: "" })
+      dispatch(currentStatusSuccess({ compnay: "", designation: "", department: "", ctc: "", workingDate: "" }))
+    } else if (activeStep === 4 && experienceDetailsValue && experienceDetailsValue[0]) {
+      setExperienceDetailsValue({ compnay: "", designation: "", department: "", ctc: "", workingDate: "", workingTo: "" })
+      dispatch(experienceDetailsSuccess({ compnay: "", designation: "", department: "", ctc: "", workingDate: "", workingTo: "" }))
+    } else if (activeStep === 5 && educationDetailsValue && educationDetailsValue[0]) {
+      setEducationDetailsValue({ course: "", university: "", passedOn: "", grade: "" })
+      dispatch(educationDetailsSuccess({ course: "", university: "", passedOn: "", grade: "" }))
+    }
   }
 
-  const hadndleSubit = () =>{
-    dispatch(employeeFormSuccess([{'PersonalDetails': personalDetailValue ,'BankDetails':bankDetailValue, 'ProfessionalDetails':professionalDetailValue,
-                                  'CurrentStatus':currentStatusValue ,'ExperienceDetails':experienceDetailsValue, 'Educational Details':educationDetailsValue}]))
+  const hadndleSubit = () => {
+    dispatch(employeeFormSuccess([{
+      'PersonalDetails': personalDetailValue, 'BankDetails': bankDetailValue, 'ProfessionalDetails': professionalDetailValue,
+      'CurrentStatus': currentStatusValue, 'ExperienceDetails': experienceDetailsValue, 'Educational Details': educationDetailsValue
+    }]))
+    history.push('/')
   }
+
   return (
     <div className={classes.root}>
       <Stepper alternativeLabel nonLinear activeStep={activeStep}>
@@ -205,22 +205,22 @@ const UserDetail = () => {
           <div>
             <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
             <div>
-            <Button  onClick={() => {
-              handleRemove(activeStep);
-              if(activeStep === 0){
-                setIsRemovePersonal(true)
-              }else if(activeStep === 1){
-                setIsRemoveBank(true)
-              }else if(activeStep === 2){
-                setIsRemoveProfessional(true)
-              }else if(activeStep === 3){
-                setIsRemoveCurrentStatus(true)
-              }else if(activeStep === 4){
-                setIsRemoveExperience(true)
-              }else if(activeStep === 5){
-                setIsRemoveEducation(true)
-              }
-            }} className={classes.button}
+              <Button onClick={() => {
+                handleRemove(activeStep);
+                if (activeStep === 0) {
+                  setIsRemovePersonal(true)
+                } else if (activeStep === 1) {
+                  setIsRemoveBank(true)
+                } else if (activeStep === 2) {
+                  setIsRemoveProfessional(true)
+                } else if (activeStep === 3) {
+                  setIsRemoveCurrentStatus(true)
+                } else if (activeStep === 4) {
+                  setIsRemoveExperience(true)
+                } else if (activeStep === 5) {
+                  setIsRemoveEducation(true)
+                }
+              }} className={classes.button}
                 variant="contained" color="secondary">
                 Remove
               </Button>
@@ -280,4 +280,5 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
 }));
+
 export default UserDetail

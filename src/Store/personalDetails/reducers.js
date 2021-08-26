@@ -19,28 +19,27 @@ export const PersonalDetailsReducer = (state = intialState, action) => {
             return {
                 ...state,
                 professionalDetailsResponce: action.payload,
-            }; 
+            };
         case PERSONAL.SET_CURRENT_STATUS:
             return {
                 ...state,
                 currentStatusResponce: action.payload,
-            }; 
+            };
         case PERSONAL.SET_EXPERIENCE_DETAILS:
             return {
                 ...state,
                 experienceDetailsResponce: action.payload,
-            };  
+            };
         case PERSONAL.SET_EDUCATIONAL_DETAILS:
             return {
                 ...state,
                 educationDetailsResponce: action.payload,
-            };  
+            };
         case PERSONAL.SET_EMPLOYEEFORM:
-            console.log("action.payload",action.payload)
-        return {
-            ...state,
-           employeeFormResponce: [...state, action.payload],
-        };        
+            return {
+                ...state,
+                employeeFormResponce: action.payload,
+            };
         default:
             return state;
     };

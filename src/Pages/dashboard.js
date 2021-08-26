@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import CardContent from '@material-ui/core/CardContent';
@@ -14,6 +14,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import { shallowEqual, useSelector } from 'react-redux';
+
 
 const columns = [
   { id: 'name', label: 'Name', minWidth: 100 },
@@ -21,37 +23,61 @@ const columns = [
   { id: 'department', label: 'Department', minWidth: 100 },
 ];
 
-function createData(name, designation, department) {
-  return { name, designation, department };
-}
-
 const rows = [
-  createData('Arnold Charels', 'Ful-stack Developer', 'Development'),
-  createData('Syvla Chritian', 'Backend Developer', 'Frontend Development'),
-  createData('Chet Smith', 'Frontend Engineer', 'Management'),
-  createData('United States', 'Administrator', 'Finance'),
-  createData('Jhon Careter', 'Associate', 'Backend'),
-  createData('Rout Limmans', 'Backend Developer', 'Development'),
-  createData('Jhony Depp', 'Ful-stack Developer', 'Development'),
-  createData('Strest Mann', 'Associate', 'Development'),
-  createData('Meisha Saint', 'Backend Developer', 'Management'),
-  createData('Joacb jenn', 'Frontend Engineer', 'Management'),
-  createData('Lucy Feran', 'Ful-stack Developer', 'Finance'),
-  createData('Mce Ribabm', 'GB', 'Frontend Development'),
-  createData('Nulla Donen', 'Backend Developer', 'Backend'),
-  createData('Muris Javed', 'Administrator', 'Finance'),
-  createData('Zara vomen', 'Associate', 'Frontend Development'),
+  {
+    name: "Arnold Charels",
+    designation: "Ful-stack Developer",
+    department: "Development",
+  },
+  {
+    name: "Syvla Chritian",
+    designation: "Backend Developer",
+    department: "Backend",
+  },
+  {
+    name: "Chet Smith",
+    designation: "Ful-stack Developer",
+    department: "Development",
+  },
+  {
+    name: "Jhon Careter",
+    designation: "Frontend Engineer",
+    department: "Finance",
+  },
+  {
+    name: "Lucy Feran",
+    designation: "Patel",
+    department: "Frontend Development",
+  },
+  {
+    name: "Nulla Donen",
+    designation: "Patel",
+    department: "Finance",
+  },
+  {
+    name: "Lucy Feran",
+    designation: "Backend Developer",
+    department: "Management",
+  }
 ];
 
 const Dashboard = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
   const [userData, setUserData] = useState(rows);
   const [filterData, setFilterData] = useState(rows);
+  const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
 
-  const history = useHistory();
+  useEffect(() => {
+    if (Response && Response?.personalDetailsResponce || Response?.currentStatusResponce) {
+      let data = { "name": Response?.personalDetailsResponce?.firstName, "designation": Response?.currentStatusResponce?.designation, "department": Response?.currentStatusResponce?.department }
+      rows.push(data)
+    }
+
+  }, [Response?.personalDetailsResponce || Response?.currentStatusResponce])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -64,9 +90,9 @@ const Dashboard = () => {
 
   const searchFilterFunction = (text) => {
     if (text) {
-      let newData = filterData.filter(item => item.name.toLowerCase().includes(text.toLowerCase()) 
-      || item.designation.toLowerCase().includes(text.toLowerCase()) ||
-       item.department.toLowerCase().includes(text.toLowerCase()))
+      let newData = filterData.filter(item => item.name.toLowerCase().includes(text.toLowerCase())
+        || item.designation.toLowerCase().includes(text.toLowerCase()) ||
+        item.department.toLowerCase().includes(text.toLowerCase()))
       setUserData(newData);
       setSearch(text);
     } else {
@@ -74,6 +100,14 @@ const Dashboard = () => {
       setSearch(text);
     }
   };
+
+  const handleCellClick = (e) => {
+    history.push({
+      pathname: '/employee-form',
+      state: { data: e.target.textContent }
+    })
+  }
+
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -111,7 +145,7 @@ const Dashboard = () => {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell key={column.id} align={column.align} onClick={(e) => handleCellClick(e)}>
                           {column.format && typeof value === 'number' ? column.format(value) : value}
                         </TableCell>
                       );
@@ -154,4 +188,5 @@ const useStyles = makeStyles({
     marginBottom: 12,
   },
 });
+
 export default Dashboard

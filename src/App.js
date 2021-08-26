@@ -8,7 +8,7 @@ import { PersonalDetailsReducer } from './Store/personalDetails/reducers';
 export const appReducer = combineReducers({
   personalDetail: PersonalDetailsReducer,
 })
-let store = createStore(appReducer) 
+let store = createStore(appReducer)
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Routing>
         </Routing>
       </Provider>
-    </div>   
+    </div>
   );
 }
 
