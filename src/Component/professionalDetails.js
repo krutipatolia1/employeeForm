@@ -14,7 +14,7 @@ const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
     const [skill, setSkill] = useState('');
     const [resume, setResume] = useState(null);
     const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
-    console.log("Res", Response)
+
     useEffect(() => {
         if (isRemove) {
             setFormInput({ resume: "", years: "", months: '', skill: '' })
@@ -25,8 +25,7 @@ const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
         (state, newState) => ({ ...state, ...newState }),
         {
             years: "",
-            months: '',
-            skill: skill,
+            months: "",
         }
     );
 
@@ -39,8 +38,7 @@ const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
         const newValue = evt.target.value;
         setFormInput({ [name]: newValue });
         setValue([formInput]);
-        formInput.skill = skill
-        dispatch(professionalDetailsSuccess(formInput))
+
     };
 
     const onImageChange = (event) => {
@@ -97,8 +95,7 @@ const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
                                 label="Years"
                                 name="years"
                                 type="number"
-                                defaultValue={Response.professionalDetailsResponce?.years ? Response.professionalDetailsResponce.years : formInput.years}
-                                value={Response.professionalDetailsResponce?.years ? Response.professionalDetailsResponce.years : formInput.years}
+                                value={Response?.professionalDetailsResponce && Response?.professionalDetailsResponce[0] ? Response.professionalDetailsResponce[0].years : formInput.years}
                                 className={classes.textField}
                                 onChange={handleInput}
                             />
@@ -110,8 +107,7 @@ const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
                                     label="Months"
                                     name="months"
                                     type="number"
-                                    defaultValue={Response.professionalDetailsResponce?.months ? Response.professionalDetailsResponce.months : formInput.months}
-                                    value={Response.professionalDetailsResponce?.months ? Response.professionalDetailsResponce.months : formInput.months}
+                                    value={Response?.professionalDetailsResponce && Response?.professionalDetailsResponce[0] ? Response.professionalDetailsResponce[0].months : formInput.months}
                                     className={classes.textField}
                                     onChange={handleInput}
                                 />

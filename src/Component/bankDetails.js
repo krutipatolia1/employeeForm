@@ -36,7 +36,6 @@ const BankDetailComponent = ({ setValue, isRemove }) => {
     const newValue = evt.target.value;
     setFormInput({ [name]: newValue });
     setValue([formInput]);
-    dispatch(bankDetailsSuccess(formInput))
 
   };
 
@@ -50,8 +49,7 @@ const BankDetailComponent = ({ setValue, isRemove }) => {
               id="acNumber"
               name="acNumber"
               label="Account Number"
-              defaultValue={Response.bankDetailsResponce?.acNumber ? Response.bankDetailsResponce.acNumber : formInput.acNumber}
-              value={Response.bankDetailsResponce?.acNumber ? Response.bankDetailsResponce.acNumber : formInput.acNumber}
+              value={Response?.bankDetailsResponce && Response?.bankDetailsResponce[0] ? Response.bankDetailsResponce[0].acNumber : formInput.acNumber}
               type="number"
               className={classes.textField}
               onChange={handleInput}
@@ -63,8 +61,7 @@ const BankDetailComponent = ({ setValue, isRemove }) => {
               name="ifsc"
               label="IFSC"
               type="number"
-              defaultValue={Response.bankDetailsResponce?.ifsc ? Response.bankDetailsResponce.ifsc : formInput.ifsc}
-              value={Response.bankDetailsResponce?.ifsc ? Response.bankDetailsResponce.ifsc : formInput.ifsc}
+              value={Response?.bankDetailsResponce && Response?.bankDetailsResponce[0] ? Response.bankDetailsResponce[0].ifsc : formInput.ifsc}
               className={classes.textField}
               onChange={handleInput}
             />
@@ -76,8 +73,7 @@ const BankDetailComponent = ({ setValue, isRemove }) => {
               name="pan"
               className={classes.textField}
               label="PAN Card Number"
-              defaultValue={Response.bankDetailsResponce?.pan ? Response.bankDetailsResponce.pan : formInput.pan}
-              value={Response.bankDetailsResponce?.pan ? Response.bankDetailsResponce.pan : formInput.pan}
+              value={Response?.bankDetailsResponce && Response?.bankDetailsResponce[0] ? Response.bankDetailsResponce[0].pan : formInput.pan}
               onChange={handleInput}
             />
           </div>
@@ -87,8 +83,7 @@ const BankDetailComponent = ({ setValue, isRemove }) => {
               name="adhar"
               label="Adhar Card Number"
               type="number"
-              defaultValue={Response.bankDetailsResponce?.adhar ? Response.bankDetailsResponce.adhar : formInput.adhar}
-              value={Response.bankDetailsResponce?.adhar ? Response.bankDetailsResponce.adhar : formInput.adhar}
+              value={Response?.bankDetailsResponce && Response?.bankDetailsResponce[0] ? Response.bankDetailsResponce[0].adhar : formInput.adhar}
               className={classes.textField}
               onChange={handleInput}
             />

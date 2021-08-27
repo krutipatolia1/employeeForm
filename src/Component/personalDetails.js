@@ -4,16 +4,29 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { onlyChar, phoneValidator } from '../Utils/Validators';
+import { emailValidator, onlyChar, phoneValidator } from '../Utils/Validators';
 import { useLocation } from "react-router-dom";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
-const PersonalDetailComponent = ({ isRemove, setValue }, props) => {
+const PersonalDetailComponent = ({ isRemove, setValue }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null)
   const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
+  const [error, setError] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
+  const [selectedDate, setSelectedDate] = React.useState(null);
 
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
       setProfilePicture(URL.createObjectURL(event.target.files[0]));
@@ -25,6 +38,11 @@ const PersonalDetailComponent = ({ isRemove, setValue }, props) => {
       setFormInput({ firstName: "", lastName: "", dob: '', email: '', phone: '', profilePicture: null })
     }
   }, [isRemove])
+  useEffect(() => {
+    if (location?.state?.submit) {
+      setFormInput({ firstName: "", lastName: "", dob: '', email: '', phone: '', profilePicture: null })
+    }
+  }, [location?.state?.submit])
 
   const [formInput, setFormInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -39,17 +57,45 @@ const PersonalDetailComponent = ({ isRemove, setValue }, props) => {
 
   const handleSubmit = evt => {
     evt.preventDefault();
-  };
 
-  console.log("res", Response)
+  };
+  let today = new Date().toISOString().slice(0, 10)
   const handleInput = evt => {
     const name = evt.target.name;
     const newValue = (evt.target.value).trim();
-    // formInput.profilePicture = profilePicture
+    formInput.dob = selectedDate
     setFormInput({ [name]: newValue });
     setValue([formInput]);
-    // formInput.profilePicture = profilePicture
-    // dispatch(personalDetailsSuccess(formInput))
+
+    switch (name) {
+      case 'firstName':
+        error.firstName =
+          onlyChar(newValue)
+            ? 'First Name must only character!'
+            : '';
+        break;
+      case 'lastName':
+        error.lastName =
+          onlyChar(newValue)
+            ? 'Last Name must only character!'
+            : '';
+        break;
+      case 'phone':
+        error.phone =
+          phoneValidator(newValue)
+            ? 'PhoneNumber must only 10 digit!!'
+            : '';
+        break;
+      case 'email':
+        error.email =
+          emailValidator(newValue)
+            ? ''
+            : 'Email is not valid!';
+        break;
+      default:
+        break;
+    }
+    setError({ [name]: error })
   };
 
   return (
@@ -68,58 +114,57 @@ const PersonalDetailComponent = ({ isRemove, setValue }, props) => {
             id="firstName"
             label="First Name"
             name="firstName"
-            defaultValue={Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].firstName : formInput.firstName}
-            value={Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].firstName : location.state?.data ? location.state.data : formInput.firstName}
+            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].firstName : location.state?.data ? location.state.data : formInput.firstName}
             className={classes.textField}
             onChange={handleInput}
-            helperText={onlyChar(formInput.firstName) ? "only chartectrr" : "firstName"}
-            error={onlyChar(formInput.firstName) ? true : false}
+            helperText={error?.firstName?.firstName}
+            error={error?.firstName?.firstName?.length > 0 && error.firstName?.firstName !== "" ? true : false}
           />
           <TextField
             id="lastName"
             label="Last Name"
             name="lastName"
-            defaultValue={Response?.personalDetailsResponce[0]?.lastName ? Response.personalDetailsResponce[0].lastName : formInput.lastName}
-            value={Response?.personalDetailsResponce[0]?.lastName ? Response.personalDetailsResponce[0].lastName : formInput.lastName}
+            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].lastName : formInput.lastName}
             className={classes.textField}
             onChange={handleInput}
-            helperText={onlyChar(formInput.lastName) ? "only character" : "lastName"}
-            error={onlyChar(formInput.lastName) ? true : false}
+            helperText={error?.lastName?.lastName}
+            error={error?.lastName?.lastName?.length > 0 && error.lastName?.lastName !== "" ? true : false}
           />
-          <TextField
-            id="date"
-            type="date"
-            name="dob"
-            defaultValue={Response?.personalDetailsResponce[0]?.dob ? Response.personalDetailsResponce[0].dob : formInput.dob}
-            className={classes.textField}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            label="Date of Birth"
-            value={Response?.personalDetailsResponce[0]?.dob ? Response.personalDetailsResponce[0].dob : formInput.dob}
-            onChange={handleInput}
-          />
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              margin="normal"
+              id="date-picker-dialog"
+              label="Date of Birth"
+              format="MM/dd/yyyy"
+              maxDate={today}
+              value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response?.personalDetailsResponce[0].dob : selectedDate}
+              onChange={handleDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+              className={classes.textField}
+            />
+          </MuiPickersUtilsProvider>
           <TextField
             label="Phone"
             id="margin-normal"
             name="phone"
-            defaultValue={Response?.personalDetailsResponce[0]?.phone ? Response.personalDetailsResponce[0]?.phone : formInput.phone}
             className={classes.textField}
             onChange={handleInput}
             type="number"
-            value={Response?.personalDetailsResponce[0]?.phone ? Response.personalDetailsResponce[0]?.phone : formInput.phone}
-            helperText={phoneValidator(formInput.phone) ? "only 10 digit" : "phonenumber"}
-            error={phoneValidator(formInput.phone) ? true : false}
+            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0]?.phone : formInput.phone}
+            helperText={error?.phone?.phone}
+            error={error?.phone?.phone?.length > 0 && error.phone?.phone !== "" ? true : false}
           />
           <TextField
             label="Email"
             id="margin-normal"
             name="email"
-            defaultValue={Response.personalDetailsResponce[0]?.email ? Response.personalDetailsResponce[0].email : formInput.email}
-            value={Response.personalDetailsResponce[0]?.email ? Response.personalDetailsResponce[0].email : formInput.email}
+            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].email : formInput.email}
             className={classes.textField}
             onChange={handleInput}
-            helperText={"ex.: @abc@gmail.com"}
+            helperText={error?.email?.email}
+            error={error?.email?.email?.length > 0 && error.email?.email !== "" ? true : false}
           />
         </form>
       </div>

@@ -36,7 +36,6 @@ const CurrentStatusComponent = ({ setValue, isRemove }) => {
     const newValue = evt.target.value;
     setFormInput({ [name]: newValue });
     setValue([formInput]);
-    dispatch(currentStatusSuccess(formInput))
   };
 
   return (
@@ -49,8 +48,7 @@ const CurrentStatusComponent = ({ setValue, isRemove }) => {
               id="compnay"
               label="Compnay"
               name="compnay"
-              defaultValue={Response.currentStatusResponce?.compnay ? Response.currentStatusResponce.compnay : formInput.compnay}
-              value={Response.currentStatusResponce?.compnay ? Response.currentStatusResponce.compnay : formInput.compnay}
+              value={Response?.currentStatusResponce && Response?.currentStatusResponce[0] ? Response.currentStatusResponce[0].compnay : formInput.compnay}
               className={classes.textField}
               onChange={handleInput}
             />
@@ -60,19 +58,7 @@ const CurrentStatusComponent = ({ setValue, isRemove }) => {
               id="designation"
               label="Designation"
               name="designation"
-              defaultValue={Response.currentStatusResponce?.designation ? Response.currentStatusResponce.designation : formInput.designation}
-              value={Response.currentStatusResponce?.designation ? Response.currentStatusResponce.designation : formInput.designation}
-              className={classes.textField}
-              onChange={handleInput}
-            />
-          </div>
-          <div>
-            <TextField
-              id="department"
-              label="Department"
-              name="department"
-              defaultValue={Response.currentStatusResponce?.department ? Response.currentStatusResponce.department : formInput.department}
-              value={Response.currentStatusResponce?.department ? Response.currentStatusResponce.department : formInput.department}
+              value={Response?.currentStatusResponce && Response?.currentStatusResponce[0] ? Response.currentStatusResponce[0].designation : formInput.designation}
               className={classes.textField}
               onChange={handleInput}
             />
@@ -83,8 +69,7 @@ const CurrentStatusComponent = ({ setValue, isRemove }) => {
               label="CTC"
               type="number"
               name="ctc"
-              defaultValue={Response.currentStatusResponce?.ctc ? Response.currentStatusResponce.ctc : formInput.ctc}
-              value={Response.currentStatusResponce?.ctc ? Response.currentStatusResponce.ctc : formInput.ctc}
+              value={Response?.currentStatusResponce && Response?.currentStatusResponce[0] ? Response.currentStatusResponce[0].ctc : formInput.ctc}
               className={classes.textField}
               onChange={handleInput}
             />
@@ -94,13 +79,22 @@ const CurrentStatusComponent = ({ setValue, isRemove }) => {
               id="date"
               type="date"
               name="workingDate"
-              defaultValue={Response.currentStatusResponce?.workingDate ? Response.currentStatusResponce.workingDate : formInput.workingDate}
-              value={Response.currentStatusResponce?.workingDate ? Response.currentStatusResponce.workingDate : formInput.workingDate}
+              value={Response?.currentStatusResponce && Response?.currentStatusResponce[0] ? Response.currentStatusResponce[0].workingDate : formInput.workingDate}
               className={classes.textField}
               InputLabelProps={{
                 shrink: true,
               }}
               label="Working From"
+              onChange={handleInput}
+            />
+          </div>
+          <div>
+            <TextField
+              id="department"
+              label="Department"
+              name="department"
+              value={Response?.currentStatusResponce && Response?.currentStatusResponce[0] ? Response.currentStatusResponce[0].department : formInput.department}
+              className={classes.textField}
               onChange={handleInput}
             />
           </div>

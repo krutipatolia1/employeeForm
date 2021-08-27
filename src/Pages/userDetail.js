@@ -39,6 +39,7 @@ const UserDetail = () => {
   const [isRemoveuCrrentStatus, setIsRemoveCurrentStatus] = useState(false);
   const [isRemoveExperience, setIsRemoveExperience] = useState(false);
   const [isRemoveEducation, setIsRemoveEducation] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false)
 
   function getStepContent(step) {
     switch (step) {
@@ -82,25 +83,9 @@ const UserDetail = () => {
     return activeStep === totalSteps() - 1;
   };
 
-  const handleNext = () => {
-    const newActiveStep =
-      isLastStep() && !allStepsCompleted()
-        ? // It's the last step, but not all steps have been completed
-        // find the first step that has been completed
-        steps.findIndex((step, i) => !completed.has(i))
-        : activeStep + 1;
-
-    setActiveStep(newActiveStep);
-  };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
-  const handleStep = (step) => () => {
-    setActiveStep(step);
-  };
-
 
   const handleReset = () => {
     setActiveStep(0);
@@ -115,17 +100,39 @@ const UserDetail = () => {
   function isStepComplete(step) {
     return completed.has(step);
   }
+  const handleNext = (activeStep) => {
+    const newActiveStep =
+      isLastStep() && !allStepsCompleted()
+        ? // It's the last step, but not all steps have been completed
+        // find the first step that has been completed
+        steps.findIndex((step, i) => !completed.has(i))
+        : activeStep + 1;
+
+    setActiveStep(newActiveStep);
+    if (activeStep === 0) {
+      dispatch(personalDetailsSuccess(personalDetailValue))
+    } else if (activeStep === 1) {
+      dispatch(bankDetailsSuccess(bankDetailValue))
+    } else if (activeStep === 2) {
+      dispatch(professionalDetailsSuccess(professionalDetailValue))
+    } else if (activeStep === 3) {
+      dispatch(currentStatusSuccess(currentStatusValue))
+    } else if (activeStep === 4) {
+      dispatch(experienceDetailsSuccess(experienceDetailsValue))
+    } else if (activeStep === 5) {
+      dispatch(educationDetailsSuccess(educationDetailsValue))
+    }
+  };
 
   const nextClick = (activeStep) => {
     if (activeStep === 0) {
       return personalDetailValue[0] !== undefined && personalDetailValue[0]?.firstName !== '' && personalDetailValue[0]?.lastName !== '' && personalDetailValue[0]?.dob !== ''
-        && personalDetailValue[0]?.phone !== '' && personalDetailValue[0]?.email !== '' ? false : true &&
-      dispatch(personalDetailsSuccess(personalDetailValue))
+        && personalDetailValue[0]?.phone !== '' && personalDetailValue[0]?.email !== '' ? false : true
     } else if (activeStep === 1) {
       return bankDetailValue[0] !== undefined && bankDetailValue[0]?.acNumber !== '' && bankDetailValue[0]?.ifsc !== '' && bankDetailValue[0]?.pan !== ''
         && bankDetailValue[0]?.adhar !== '' ? false : true
     } else if (activeStep === 2) {
-      return professionalDetailValue[0] !== undefined && professionalDetailValue[0]?.years !== '' && bankDetailValue[0]?.months !== ''
+      return professionalDetailValue[0] !== undefined && professionalDetailValue[0]?.years !== ''
         ? false : true
     } else if (activeStep === 3) {
       return currentStatusValue[0] !== undefined && currentStatusValue[0]?.compnay !== '' && currentStatusValue[0]?.designation !== '' && currentStatusValue[0]?.department !== ''
@@ -160,14 +167,27 @@ const UserDetail = () => {
     }
   }
 
-  const hadndleSubit = () => {
-    dispatch(employeeFormSuccess([{
-      'PersonalDetails': personalDetailValue, 'BankDetails': bankDetailValue, 'ProfessionalDetails': professionalDetailValue,
-      'CurrentStatus': currentStatusValue, 'ExperienceDetails': experienceDetailsValue, 'Educational Details': educationDetailsValue
-    }]))
-    history.push('/')
-  }
+  useEffect(() => {
+    if (isSubmit) {
+      dispatch(employeeFormSuccess([{
+        'PersonalDetails': personalDetailValue, 'BankDetails': bankDetailValue, 'ProfessionalDetails': professionalDetailValue,
+        'CurrentStatus': currentStatusValue, 'ExperienceDetails': experienceDetailsValue, 'Educational Details': educationDetailsValue
+      }]))
 
+      history.push({
+        pathname: '/',
+        state: { data: isSubmit }
+      })
+      dispatch(personalDetailsSuccess({ dob: "", email: "", firstName: "", lastName: "", phone: "", profilePicture: null }))
+      dispatch(bankDetailsSuccess({ acNumber: "", ifsc: "", pan: "", adhar: "" }))
+      dispatch(professionalDetailsSuccess({ years: "", months: "" }))
+      dispatch(experienceDetailsSuccess({ compnay: "", designation: "", department: "", ctc: "", workingDate: "", workingTo: "" }))
+      dispatch(educationDetailsSuccess({ course: "", university: "", passedOn: "", grade: "" }))
+      dispatch(currentStatusSuccess({ compnay: "", designation: "", department: "", ctc: "", workingDate: "" }))
+    }
+
+
+  }, [isSubmit])
   return (
     <div className={classes.root}>
       <Stepper alternativeLabel nonLinear activeStep={activeStep}>
@@ -183,7 +203,6 @@ const UserDetail = () => {
           return (
             <Step key={label} {...stepProps}>
               <StepButton
-                onClick={handleStep(index)}
                 completed={isStepComplete(index)}
                 {...buttonProps}
               >
@@ -238,7 +257,7 @@ const UserDetail = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleNext}
+                onClick={() => handleNext(activeStep)}
                 disabled={
                   nextClick(activeStep)
                 }
@@ -249,7 +268,10 @@ const UserDetail = () => {
               <Button disabled={activeStep !== 5}
                 variant="contained"
                 color="primary"
-                onClick={hadndleSubit}
+                onClick={async () => {
+                  await setIsSubmit(true);
+                  // await hadndleSubit(activeStep);
+                }}
                 className={classes.button}
               >
                 Submit

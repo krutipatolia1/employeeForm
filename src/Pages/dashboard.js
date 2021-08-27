@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { shallowEqual, useSelector } from 'react-redux';
-
+import { useLocation } from "react-router-dom";
 
 const columns = [
   { id: 'name', label: 'Name', minWidth: 100 },
@@ -70,14 +70,19 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(rows);
   const [filterData, setFilterData] = useState(rows);
   const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
+  const location = useLocation();
 
   useEffect(() => {
-    if (Response && Response?.personalDetailsResponce || Response?.currentStatusResponce) {
-      let data = { "name": Response?.personalDetailsResponce?.firstName, "designation": Response?.currentStatusResponce?.designation, "department": Response?.currentStatusResponce?.department }
+    if (Response && Response.employeeFormResponce && Response.employeeFormResponce[0]) {
+      let data = {
+        "name": Response && Response.employeeFormResponce && Response.employeeFormResponce[0] && Response.employeeFormResponce[0].PersonalDetails[0]?.firstName,
+        "designation": Response && Response.employeeFormResponce && Response.employeeFormResponce[0] && Response.employeeFormResponce[0].CurrentStatus[0]?.designation,
+        "department": Response && Response.employeeFormResponce && Response.employeeFormResponce[0] && Response.employeeFormResponce[0].CurrentStatus[0]?.department,
+      }
       rows.push(data)
     }
 
-  }, [Response?.personalDetailsResponce || Response?.currentStatusResponce])
+  }, [])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -104,7 +109,7 @@ const Dashboard = () => {
   const handleCellClick = (e) => {
     history.push({
       pathname: '/employee-form',
-      state: { data: e.target.textContent }
+      state: { data: e.target.textContent, submit: location?.state?.data }
     })
   }
 
@@ -150,6 +155,7 @@ const Dashboard = () => {
                         </TableCell>
                       );
                     })}
+                    <Button onClick={(e) => console.log("value", row)}>Edit</Button>
                   </TableRow>
                 );
               })}

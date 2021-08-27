@@ -62,7 +62,6 @@ const EducationalDetailComponent = ({ setValue, isRemove }) => {
     const newValue = evt.target.value;
     setFormInput({ [name]: newValue });
     setValue([formInput]);
-    dispatch(educationDetailsSuccess(formInput))
   };
 
   const handleClickOpen = () => {
@@ -92,8 +91,7 @@ const EducationalDetailComponent = ({ setValue, isRemove }) => {
                 id="course"
                 label="Course"
                 name="course"
-                defaultValue={Response.educationDetailsResponce?.course ? Response.educationDetailsResponce.course : formInput.course}
-                value={Response.educationDetailsResponce?.course ? Response.educationDetailsResponce.course : formInput.course}
+                value={Response?.educationDetailsResponce && Response?.educationDetailsResponce[0] ? Response.educationDetailsResponce[0].course : formInput.course}
                 className={classes.textField}
                 onChange={handleInput}
               />
@@ -103,8 +101,7 @@ const EducationalDetailComponent = ({ setValue, isRemove }) => {
                 id="university"
                 label="University"
                 name="university"
-                defaultValue={Response.educationDetailsResponce?.university ? Response.educationDetailsResponce.university : formInput.university}
-                value={Response.educationDetailsResponce?.university ? Response.educationDetailsResponce.university : formInput.university}
+                value={Response?.educationDetailsResponce && Response?.educationDetailsResponce[0] ? Response.educationDetailsResponce[0].university : formInput.university}
                 className={classes.textField}
                 onChange={handleInput}
               />
@@ -114,8 +111,7 @@ const EducationalDetailComponent = ({ setValue, isRemove }) => {
                 id="date"
                 type="date"
                 name="passedOn"
-                defaultValue={Response.educationDetailsResponce?.passedOn ? Response.educationDetailsResponce.passedOn : formInput.passedOn}
-                value={Response.educationDetailsResponce?.passedOn ? Response.educationDetailsResponce.passedOn : formInput.passedOn}
+                value={Response?.educationDetailsResponce && Response?.educationDetailsResponce[0] ? Response.educationDetailsResponce[0].passedOn : formInput.passedOn}
                 className={classes.textField}
                 InputLabelProps={{
                   shrink: true,
@@ -129,8 +125,7 @@ const EducationalDetailComponent = ({ setValue, isRemove }) => {
                 id="grade"
                 label="Grade"
                 name="grade"
-                defaultValue={Response.educationDetailsResponce?.grade ? Response.educationDetailsResponce.grade : formInput.grade}
-                value={Response.educationDetailsResponce?.grade ? Response.educationDetailsResponce.grade : formInput.grade}
+                value={Response?.educationDetailsResponce && Response?.educationDetailsResponce[0] ? Response.educationDetailsResponce[0].grade : formInput.grade}
                 className={classes.textField}
                 onChange={handleInput}
               />

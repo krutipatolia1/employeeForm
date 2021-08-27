@@ -64,7 +64,6 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
     const newValue = evt.target.value;
     setFormInput({ [name]: newValue });
     setValue([formInput]);
-    dispatch(experienceDetailsSuccess(formInput))
   };
 
   const handleClickOpen = () => {
@@ -94,8 +93,7 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
                 id="compnay"
                 label="Compnay"
                 name="compnay"
-                defaultValue={Response.experienceDetailsResponce?.compnay ? Response.experienceDetailsResponce.compnay : formInput.compnay}
-                value={Response.experienceDetailsResponce?.compnay ? Response.experienceDetailsResponce.compnay : formInput.compnay}
+                value={Response?.experienceDetailsResponce && Response?.experienceDetailsResponce[0] ? Response.experienceDetailsResponce[0].compnay : formInput.compnay}
                 className={classes.textField}
                 onChange={handleInput}
               />
@@ -105,8 +103,7 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
                 id="designation"
                 label="Designation"
                 name="designation"
-                defaultValue={Response.experienceDetailsResponce?.designation ? Response.experienceDetailsResponce.designation : formInput.designation}
-                value={Response.experienceDetailsResponce?.designation ? Response.experienceDetailsResponce.designation : formInput.designation}
+                value={Response?.experienceDetailsResponce && Response?.experienceDetailsResponce[0] ? Response.experienceDetailsResponce[0].designation : formInput.designation}
                 className={classes.textField}
                 onChange={handleInput}
               />
@@ -116,8 +113,7 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
                 id="department"
                 label="Department"
                 name="department"
-                defaultValue={Response.experienceDetailsResponce?.department ? Response.experienceDetailsResponce.department : formInput.department}
-                value={Response.experienceDetailsResponce?.department ? Response.experienceDetailsResponce.department : formInput.department}
+                value={Response?.experienceDetailsResponce && Response?.experienceDetailsResponce[0] ? Response.experienceDetailsResponce[0].department : formInput.department}
                 className={classes.textField}
                 onChange={handleInput}
               />
@@ -132,8 +128,7 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
                   shrink: true,
                 }}
                 label="From"
-                defaultValue={Response.experienceDetailsResponce?.workingDate ? Response.experienceDetailsResponce.workingDate : formInput.workingDate}
-                value={Response.experienceDetailsResponce?.workingDate ? Response.experienceDetailsResponce.workingDate : formInput.workingDate}
+                value={Response?.experienceDetailsResponce && Response?.experienceDetailsResponce[0] ? Response.experienceDetailsResponce[0].workingDate : formInput.workingDate}
                 onChange={handleInput}
               />
             </div>
@@ -147,8 +142,7 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
                   shrink: true,
                 }}
                 label="To"
-                defaultValue={Response.experienceDetailsResponce?.workingTo ? Response.experienceDetailsResponce.workingTo : formInput.workingTo}
-                value={Response.experienceDetailsResponce?.workingTo ? Response.experienceDetailsResponce.workingTo : formInput.workingTo}
+                value={Response?.experienceDetailsResponce && Response?.experienceDetailsResponce[0] ? Response.experienceDetailsResponce[0].workingTo : formInput.workingTo}
                 onChange={handleInput}
               />
             </div>
@@ -158,8 +152,7 @@ const ExperienceDetailComponent = ({ setValue, isRemove }) => {
                 label="CTC"
                 name="ctc"
                 type="number"
-                defaultValue={Response.experienceDetailsResponce?.ctc ? Response.experienceDetailsResponce.ctc : formInput.ctc}
-                value={Response.experienceDetailsResponce?.ctc ? Response.experienceDetailsResponce.ctc : formInput.ctc}
+                value={Response?.experienceDetailsResponce && Response?.experienceDetailsResponce[0] ? Response.experienceDetailsResponce[0].ctc : formInput.ctc}
                 className={classes.textField}
                 onChange={handleInput}
               />
