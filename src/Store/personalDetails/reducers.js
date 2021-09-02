@@ -1,6 +1,7 @@
 import { PERSONAL } from './type';
 
 export const intialState = {
+    employeeFormResponce: []
 };
 
 export const PersonalDetailsReducer = (state = intialState, action) => {
@@ -36,9 +37,26 @@ export const PersonalDetailsReducer = (state = intialState, action) => {
                 educationDetailsResponce: action.payload,
             };
         case PERSONAL.SET_EMPLOYEEFORM:
+            let item = state.employeeFormResponce
+            item.push(action.payload)
             return {
                 ...state,
-                employeeFormResponce: action.payload,
+                employeeFormResponce: item,
+            };
+        case PERSONAL.USER_EDIT:
+            return {
+                ...state,
+                employeeFormResponce: state.employeeFormResponce.map((item) => item.id === action.payload.id ? action.payload : item),
+            };
+        case PERSONAL.USER_DELETE:
+            return {
+                ...state,
+                employeeFormResponce: state.employeeFormResponce.filter((item) => item.id !== action.payload.id),
+            };
+        case PERSONAL.DELETE_ALL:
+            return {
+                ...state,
+                employeeFormResponce: []
             };
         default:
             return state;

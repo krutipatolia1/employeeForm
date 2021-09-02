@@ -3,13 +3,10 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { emailValidator, onlyChar, phoneValidator } from '../Utils/Validators';
+import { shallowEqual, useSelector } from 'react-redux';
+import { emailValidator, onlyChar } from '../Utils/Validators';
 import { useLocation } from "react-router-dom";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker, } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 const PersonalDetailComponent = ({ isRemove, setValue }) => {
@@ -17,11 +14,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null)
   const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
-  const [error, setError] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-  });
+  const [error, setError] = useState({ firstName: '', lastName: '', email: '' });
   const [selectedDate, setSelectedDate] = React.useState(null);
 
   const handleDateChange = (date) => {
@@ -38,35 +31,37 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
       setFormInput({ firstName: "", lastName: "", dob: '', email: '', phone: '', profilePicture: null })
     }
   }, [isRemove])
+
   useEffect(() => {
     if (location?.state?.submit) {
       setFormInput({ firstName: "", lastName: "", dob: '', email: '', phone: '', profilePicture: null })
     }
   }, [location?.state?.submit])
 
+  useEffect(() => {
+    if (Response?.personalDetailsResponce && Response?.personalDetailsResponce[0]) {
+      setSelectedDate(Response?.personalDetailsResponce && Response?.personalDetailsResponce[0]?.dob)
+    }
+  }, [Response?.personalDetailsResponce && Response?.personalDetailsResponce[0]])
+
   const [formInput, setFormInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
-      firstName: "",
-      lastName: "",
-      dob: '',
-      email: '',
-      phone: ''
+      firstName: Response?.personalDetailsResponce ? Response?.personalDetailsResponce[0]?.firstName : '',
+      lastName: Response?.personalDetailsResponce ? Response?.personalDetailsResponce[0]?.lastName : '',
+      dob: Response?.personalDetailsResponce ? Response?.personalDetailsResponce[0]?.dob : null,
+      email: Response?.personalDetailsResponce ? Response?.personalDetailsResponce[0]?.email : '',
+      phone: Response?.personalDetailsResponce ? Response?.personalDetailsResponce[0]?.phone : ''
     }
   );
 
   const handleSubmit = evt => {
     evt.preventDefault();
-
   };
-  let today = new Date().toISOString().slice(0, 10)
-  const handleInput = evt => {
-    const name = evt.target.name;
-    const newValue = (evt.target.value).trim();
-    formInput.dob = selectedDate
-    setFormInput({ [name]: newValue });
-    setValue([formInput]);
 
+  let today = new Date().toISOString().slice(0, 10)
+
+  const validationSchema = (name, newValue) => {
     switch (name) {
       case 'firstName':
         error.firstName =
@@ -82,7 +77,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
         break;
       case 'phone':
         error.phone =
-          phoneValidator(newValue)
+          newValue.length !== 10
             ? 'PhoneNumber must only 10 digit!!'
             : '';
         break;
@@ -95,6 +90,16 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
       default:
         break;
     }
+  }
+
+  const handleInput = evt => {
+    const name = evt.target.name;
+    const newValue = (evt.target.value).trim();
+    formInput.dob = selectedDate
+    formInput.profile = profilePicture
+    setFormInput({ [name]: newValue });
+    setValue([formInput]);
+    validationSchema(name, newValue)
     setError({ [name]: error })
   };
 
@@ -114,7 +119,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
             id="firstName"
             label="First Name"
             name="firstName"
-            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].firstName : location.state?.data ? location.state.data : formInput.firstName}
+            value={formInput.firstName}
             className={classes.textField}
             onChange={handleInput}
             helperText={error?.firstName?.firstName}
@@ -124,7 +129,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
             id="lastName"
             label="Last Name"
             name="lastName"
-            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].lastName : formInput.lastName}
+            value={formInput.lastName}
             className={classes.textField}
             onChange={handleInput}
             helperText={error?.lastName?.lastName}
@@ -137,7 +142,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
               label="Date of Birth"
               format="MM/dd/yyyy"
               maxDate={today}
-              value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response?.personalDetailsResponce[0].dob : selectedDate}
+              value={selectedDate}
               onChange={handleDateChange}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
@@ -152,7 +157,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
             className={classes.textField}
             onChange={handleInput}
             type="number"
-            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0]?.phone : formInput.phone}
+            value={formInput.phone}
             helperText={error?.phone?.phone}
             error={error?.phone?.phone?.length > 0 && error.phone?.phone !== "" ? true : false}
           />
@@ -160,7 +165,7 @@ const PersonalDetailComponent = ({ isRemove, setValue }) => {
             label="Email"
             id="margin-normal"
             name="email"
-            value={Response?.personalDetailsResponce && Response?.personalDetailsResponce[0] ? Response.personalDetailsResponce[0].email : formInput.email}
+            value={formInput.email}
             className={classes.textField}
             onChange={handleInput}
             helperText={error?.email?.email}

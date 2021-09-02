@@ -10,9 +10,14 @@ export const onlyChar = (text) => {
     return regEx.test(text);
 };
 
-export const phoneValidator = (text) => {
+export const ifscValidator = (text) => {
     text = text.trim();
-    const regEx = /^([0-9]{11})$/;
+    const regEx = /^[^\s]{4}\d{7}$/;
     return regEx.test(text);
 };
 
+export const panValidator = (text) => {
+    text = text.trim();
+    const regEx = /([A-Z]){5}([0-9]){4}([A-Z]){1}$/;
+    return regEx.test(text);
+};

@@ -4,13 +4,11 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { professionalDetailsSuccess } from '../Store/personalDetails/action';
 
 const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
     const classes = useStyles();
-    const dispatch = useDispatch();
     const [skill, setSkill] = useState('');
     const [resume, setResume] = useState(null);
     const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
@@ -70,11 +68,8 @@ const ProfessionalDetailComponent = ({ setValue, isRemove }) => {
                             id="resume"
                             label="Resume"
                             name="resume"
-                            // defaultValue ={Response.professionalDetailsResponce?.resume ? Response.professionalDetailsResponce?.resume: resume}
-                            // value={Response.professionalDetailsResponce?.resume ? Response.professionalDetailsResponce?.resume: resume}
                             type="file"
                             onChange={(event) => onImageChange(event)}
-                        // onChange={handleInput}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>

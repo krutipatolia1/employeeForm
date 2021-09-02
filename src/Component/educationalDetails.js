@@ -33,7 +33,6 @@ const DialogContent = withStyles((theme) => ({
 const EducationalDetailComponent = ({ setValue, isRemove }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const dispatch = useDispatch();
   const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
 
   useEffect(() => {

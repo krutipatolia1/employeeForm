@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { useHistory } from "react-router-dom";
 import Table from '@material-ui/core/Table';
@@ -14,51 +13,19 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { useLocation } from "react-router-dom";
+import { DeleteAll, userDelete } from '../Store/personalDetails/action';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import EditIcon from '@material-ui/icons/Edit';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 100 },
+  { id: 'firstName', label: 'Name', minWidth: 100 },
   { id: 'designation', label: 'Designation', minWidth: 100 },
   { id: 'department', label: 'Department', minWidth: 100 },
-];
-
-const rows = [
-  {
-    name: "Arnold Charels",
-    designation: "Ful-stack Developer",
-    department: "Development",
-  },
-  {
-    name: "Syvla Chritian",
-    designation: "Backend Developer",
-    department: "Backend",
-  },
-  {
-    name: "Chet Smith",
-    designation: "Ful-stack Developer",
-    department: "Development",
-  },
-  {
-    name: "Jhon Careter",
-    designation: "Frontend Engineer",
-    department: "Finance",
-  },
-  {
-    name: "Lucy Feran",
-    designation: "Patel",
-    department: "Frontend Development",
-  },
-  {
-    name: "Nulla Donen",
-    designation: "Patel",
-    department: "Finance",
-  },
-  {
-    name: "Lucy Feran",
-    designation: "Backend Developer",
-    department: "Management",
-  }
 ];
 
 const Dashboard = () => {
@@ -67,22 +34,15 @@ const Dashboard = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
-  const [userData, setUserData] = useState(rows);
-  const [filterData, setFilterData] = useState(rows);
   const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
+  const [userData, setUserData] = useState(Response.employeeFormResponce);
+  const [filterData, setFilterData] = useState(Response.employeeFormResponce);
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (Response && Response.employeeFormResponce && Response.employeeFormResponce[0]) {
-      let data = {
-        "name": Response && Response.employeeFormResponce && Response.employeeFormResponce[0] && Response.employeeFormResponce[0].PersonalDetails[0]?.firstName,
-        "designation": Response && Response.employeeFormResponce && Response.employeeFormResponce[0] && Response.employeeFormResponce[0].CurrentStatus[0]?.designation,
-        "department": Response && Response.employeeFormResponce && Response.employeeFormResponce[0] && Response.employeeFormResponce[0].CurrentStatus[0]?.department,
-      }
-      rows.push(data)
-    }
-
-  }, [])
+    setUserData(Response.employeeFormResponce)
+  }, [Response?.employeeFormResponce])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -95,13 +55,13 @@ const Dashboard = () => {
 
   const searchFilterFunction = (text) => {
     if (text) {
-      let newData = filterData.filter(item => item.name.toLowerCase().includes(text.toLowerCase())
+      let newData = filterData.filter(item => item.firstName.toLowerCase().includes(text.toLowerCase())
         || item.designation.toLowerCase().includes(text.toLowerCase()) ||
         item.department.toLowerCase().includes(text.toLowerCase()))
       setUserData(newData);
       setSearch(text);
     } else {
-      setUserData(rows);
+      setUserData(filterData);
       setSearch(text);
     }
   };
@@ -118,50 +78,90 @@ const Dashboard = () => {
       <CardContent>
         <Typography className={classes.title} color="textSecondary" gutterBottom>Albiorix Technology Team</Typography>
         <Grid container spacing={24}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={8}>
             <TextField id="outlined-search" label="Search field" type="search" variant="outlined" style={{ right: 200 }}
               value={search}
               onChange={(e) => searchFilterFunction(e.target.value)} />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <Button variant="contained" color="primary" style={{ left: 200 }}
-              onClick={() => { history.push('/employee-form') }}>Add</Button>
+          <Grid item xs={12} sm={4}>
+            <div >
+              <Tooltip title="Add User" aria-label="add">
+                <IconButton aria-label="add">
+                  <AddBoxIcon variant="contained" color="primary"
+                    style={{ fontSize: '40px' }}
+                    onClick={() => { history.push('/employee-form') }} />
+                </IconButton>
+              </Tooltip>
+              {userData.length > 0 &&
+                <Tooltip title="Delete" aria-label="delete">
+                  <IconButton aria-label="delete">
+                    <DeleteIcon
+                      style={{ fontSize: '40px' }}
+                      onClick={(e) => dispatch(DeleteAll())}
+                      variant="contained" color="secondary"
+                    />
+                  </IconButton>
+                </Tooltip>}
+            </div>
           </Grid>
         </Grid>
-        <TableContainer className={classes.container}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {userData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align} onClick={(e) => handleCellClick(e)}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      );
-                    })}
-                    <Button onClick={(e) => console.log("value", row)}>Edit</Button>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div style={{ marginTop: 10 }}>
+          <TableContainer className={classes.container}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {userData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align} onClick={(e) => handleCellClick(e)}>
+                            {column.format && typeof value === 'number' ? column.format(value) : value}
+                          </TableCell>
+
+                        );
+                      })}
+                      <div>
+                        <Tooltip title="Edit" aria-label="edit">
+                          <IconButton aria-label="edit">
+                            <EditIcon
+                              variant="contained" color="primary" onClick={(e) => history.push({
+                                pathname: '/employee-edit',
+                                state: { user: row }
+                              })} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete" aria-label="delete">
+                          <IconButton aria-label="delete">
+                            <DeleteIcon
+                              className={classes.button}
+                              variant="contained" color="secondary"
+                              onClick={(e) => dispatch(userDelete(row))}
+                              variant="contained" color="secondary"
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
@@ -180,19 +180,14 @@ const useStyles = makeStyles({
   root: {
     minWidth: 275,
   },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
   title: {
     fontSize: 18,
     fontFamily: 700,
     color: 'black'
   },
-  pos: {
-    marginBottom: 12,
-  },
+  button: {
+    margin: '2px',
+  }
 });
 
 export default Dashboard

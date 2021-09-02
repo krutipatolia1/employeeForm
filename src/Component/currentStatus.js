@@ -7,7 +7,6 @@ import { currentStatusSuccess } from '../Store/personalDetails/action';
 
 const CurrentStatusComponent = ({ setValue, isRemove }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
 
   useEffect(() => {

@@ -12,7 +12,7 @@ import ProfessionalDetailComponent from '../Component/professionalDetails';
 import CurrentStatusComponent from '../Component/currentStatus';
 import ExperienceDetailComponent from '../Component/experienceDetails';
 import EducationalDetailComponent from '../Component/educationalDetails';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { bankDetailsSuccess, currentStatusSuccess, educationDetailsSuccess, employeeFormSuccess, experienceDetailsSuccess, personalDetailsSuccess, professionalDetailsSuccess } from '../Store/personalDetails/action';
 
 function getSteps() {
@@ -40,6 +40,9 @@ const UserDetail = () => {
   const [isRemoveExperience, setIsRemoveExperience] = useState(false);
   const [isRemoveEducation, setIsRemoveEducation] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false)
+  const [id, setId] = useState(0)
+
+  const Response = useSelector((state) => { return state.personalDetail }, shallowEqual);
 
   function getStepContent(step) {
     switch (step) {
@@ -169,10 +172,14 @@ const UserDetail = () => {
 
   useEffect(() => {
     if (isSubmit) {
-      dispatch(employeeFormSuccess([{
-        'PersonalDetails': personalDetailValue, 'BankDetails': bankDetailValue, 'ProfessionalDetails': professionalDetailValue,
-        'CurrentStatus': currentStatusValue, 'ExperienceDetails': experienceDetailsValue, 'Educational Details': educationDetailsValue
-      }]))
+      dispatch(employeeFormSuccess({
+        id: id,
+        profile: personalDetailValue[0].profile, dob: personalDetailValue[0].dob, email: personalDetailValue[0].email, firstName: personalDetailValue[0].firstName, lastName: personalDetailValue[0].lastName, phone: personalDetailValue[0].phone,
+        acNumber: bankDetailValue[0].acNumber, ifsc: bankDetailValue[0].ifsc, pan: bankDetailValue[0].pan, adhar: bankDetailValue[0].adhar, years: professionalDetailValue[0].years, months: professionalDetailValue[0].months,
+        pastCompnay: experienceDetailsValue[0].compnay, pastDesignation: experienceDetailsValue[0].designation, pastDepartment: experienceDetailsValue[0].department, pastCtc: experienceDetailsValue[0].ctc, pastWorkingDate: experienceDetailsValue[0].workingDate, workingTo: experienceDetailsValue[0].workingTo,
+        course: educationDetailsValue[0].course, university: educationDetailsValue[0].university, passedOn: educationDetailsValue[0].passedOn, grade: educationDetailsValue[0].grade,
+        compnay: currentStatusValue[0].compnay, designation: currentStatusValue[0].designation, department: currentStatusValue[0].department, ctc: currentStatusValue[0].ctc, workingDate: currentStatusValue[0].workingDate
+      }))
 
       history.push({
         pathname: '/',
@@ -185,9 +192,17 @@ const UserDetail = () => {
       dispatch(educationDetailsSuccess({ course: "", university: "", passedOn: "", grade: "" }))
       dispatch(currentStatusSuccess({ compnay: "", designation: "", department: "", ctc: "", workingDate: "" }))
     }
-
-
   }, [isSubmit])
+
+  const handleDisableSubmit = () => {
+    if (educationDetailsValue[0] !== undefined && educationDetailsValue[0]?.course !== '' && educationDetailsValue[0]?.passedOn !== ''
+      && educationDetailsValue[0]?.university !== '' && educationDetailsValue[0]?.grade !== '') {
+      return false
+    } else {
+      return true
+    }
+  }
+
   return (
     <div className={classes.root}>
       <Stepper alternativeLabel nonLinear activeStep={activeStep}>
@@ -265,12 +280,13 @@ const UserDetail = () => {
               >
                 Next
               </Button>
-              <Button disabled={activeStep !== 5}
+              <Button disabled={handleDisableSubmit()
+              }
                 variant="contained"
                 color="primary"
                 onClick={async () => {
+                  await setId(Response?.employeeFormResponce.length + 1);
                   await setIsSubmit(true);
-                  // await hadndleSubit(activeStep);
                 }}
                 className={classes.button}
               >

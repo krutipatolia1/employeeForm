@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import Dashboard from '../Pages/dashboard';
 import UserDetail from '../Pages/userDetail';
+import UserEdit from '../Component/editComponent';
 
 const Routing = () => {
     return (
@@ -16,6 +17,9 @@ const Routing = () => {
                 </Route>
                 <Route path="/employee-form">
                     <UserDetail />
+                </Route>
+                <Route path="/employee-edit">
+                    <UserEdit />
                 </Route>
             </Switch>
         </Router>

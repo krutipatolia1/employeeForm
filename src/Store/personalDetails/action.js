@@ -48,3 +48,24 @@ export const employeeFormSuccess = (payload) => {
         payload: payload
     }
 }
+
+export const userEdit = (payload) => {
+    return {
+        type: PERSONAL.USER_EDIT,
+        payload: payload
+    }
+}
+
+export const userDelete = (payload) => {
+    return {
+        type: PERSONAL.USER_DELETE,
+        payload: payload
+    }
+}
+
+export const DeleteAll = (payload) => {
+    return {
+        type: PERSONAL.DELETE_ALL,
+        payload: payload
+    }
+}
